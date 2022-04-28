@@ -1,0 +1,41 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  username: String!
+  password: String!
+  createdAt: Date!
+  updatedAt: Date!
+  groups: [Group]
+}
+
+type Query {
+  me: User
+  user(id: ID, username: String): User
+  users: [User]!
+}
+
+type Mutation {
+  createUser(user: CreateUserInput!): User!
+  updateUser(user: UpdateUserInput): User!
+  login(email: String!, password: String!): Token
+}
+
+type Token {
+  token: String!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  username: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+  username: String
+  password: String
+  newPassword: String
+}

@@ -1,0 +1,43 @@
+type Group {
+  id: ID!
+  name: String!
+  description: String
+  author: User!
+  users: [User]
+  createdAt: Date
+  updatedAt: Date
+}
+
+extend type Query {
+  groups: [Group]
+  group(id: ID, name: String): Group
+}
+
+type Mutation {
+  createGroup(groupInput: CreateGroupInput): Group
+  updateGroup(groupInput: UpdateGroupInput): Group
+  deleteGroup(idGroupInput: ID!): Group
+  addUserToGroup(addUserInput: AddUserToGroupInput!): Group
+  deleteUserToGroup(deleteUserInput: DeleteUserToGroupInput!): Group
+}
+
+input CreateGroupInput {
+  name: String!
+  description: String
+}
+
+input UpdateGroupInput {
+  id: ID!
+  name: String
+  description: String
+}
+
+input AddUserToGroupInput {
+  idUser: ID!
+  idGroup: ID!
+}
+
+input DeleteUserToGroupInput {
+  idUser: ID!
+  idGroup: ID!
+}

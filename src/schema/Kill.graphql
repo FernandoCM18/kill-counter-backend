@@ -1,0 +1,46 @@
+type Kill {
+  id: ID!
+  low: Int!
+  idUser: User!
+  idGroup: Group!
+  createdAt: Date
+  updatedAt: Date
+}
+
+extend type Query {
+  kill(id: ID!): Kill
+  kills: [Kill]
+  totalKillsInGroup(idGroup: ID): Int
+  totalKillsPerUser(idUser: ID): Int
+  totalKillsPerUserInGroup(idUser: ID, idGroup: ID): KillUser
+}
+
+type KillUser {
+  user: User
+  kills: Int
+}
+
+type Mutation {
+  createKill(killInput: CreateKillInput!): Kill
+  updateKill(killInput: UpdateKillInput!): Kill
+  deleteKill(idKill: ID!): Kill
+}
+
+type Subscription {
+  killCreated: Kill
+  killUpdated: Kill
+  KillDeleted: Kill
+  totalKillsInGroup: Int
+  totalKillsPerUser: Int
+  totalKillsPerUserInGroup: KillUser
+}
+
+input CreateKillInput {
+  low: Int!
+  idGroup: ID!
+}
+
+input UpdateKillInput {
+  id: ID!
+  low: Int!
+}

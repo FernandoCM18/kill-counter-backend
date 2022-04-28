@@ -1,0 +1,10 @@
+scalar Date
+
+type Query {
+  hello: String
+}
+
+#import 'User.graphql'
+#import 'Group.graphql'
+#import 'Kill.graphql'
+
