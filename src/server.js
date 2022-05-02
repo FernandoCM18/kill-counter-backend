@@ -42,8 +42,9 @@ const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
   server.applyMiddleware({ app });
   
   const PORT = process.env.PORT || 4000;
+  const URL = process.env.URL_SERVER || 'http://localhost:4000';
   httpServer.listen(PORT, () => {
-    console.log(`🚀 Server is now running on http://localhost:${PORT}${server.graphqlPath}`);
+    console.log(`🚀 Server is now running on ${URL}${PORT}${server.graphqlPath}`);
   });
 
 };
