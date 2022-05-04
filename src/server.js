@@ -4,9 +4,16 @@ import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import express from 'express';
+import cors from 'cors';
 import { useServer } from 'graphql-ws/lib/use/ws';
 
 const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
+
+  const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true
+  };
+
   const schema = makeExecutableSchema({ typeDefs, resolvers });
 
   const app = express();
@@ -39,7 +46,7 @@ const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
   });
 
   await server.start();
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app, cors: corsOptions });
   
   const PORT = process.env.PORT || 4000;
   const URL = process.env.URL_SERVER || 'http://localhost:4000';
