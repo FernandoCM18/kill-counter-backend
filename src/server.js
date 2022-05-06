@@ -4,13 +4,12 @@ import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import express from 'express';
-import cors from 'cors';
 import { useServer } from 'graphql-ws/lib/use/ws';
 
 const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
 
   const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin:[ 'http://localhost:3000', 'https://studio.apollographql.com'],
     credentials: true
   };
 
