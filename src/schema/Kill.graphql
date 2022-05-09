@@ -9,7 +9,7 @@ type Kill {
 
 extend type Query {
   kill(id: ID!): Kill
-  kills: [Kill]
+  kills(idGroup: ID): [Kill]
   totalKillsInGroup(idGroup: ID): Int
   totalKillsPerUser(idUser: ID): Int
   totalKillsPerUserInGroup(idUser: ID, idGroup: ID): KillUser

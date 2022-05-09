@@ -1,8 +1,6 @@
 import { validateGroup } from '../helpers/validate';
 import { UserInputError } from 'apollo-server';
 import Group from '../models/Group';
-import Kill from '../models/Kill';
-
 
 const getGroups = async() => {
   try {
@@ -78,8 +76,6 @@ const deleteUserToGroup = async(deleteUserInput, context) => {
   return await Group.findByIdAndUpdate(foundGroup.id, {$pull: {users: deleteUserInput.idUser}}, {new: true}).populate('author').populate('users');
 
 }
-
-
 
 export default {
   createGroup,

@@ -3,7 +3,7 @@ import { pubsub } from '../utils/pubsub';
 
 export default {
   Query: {
-    kills: () => killController.getKills(),
+    kills: (_, { idGroup }) => killController.getKills(idGroup),
     kill: (_, { id }) => killController.getKill(id),
     totalKillsInGroup: (_, { idGroup}) => killController.getTotalKillsInGroup(idGroup),
     totalKillsPerUser: (_, { idUser }) => killController.getTotalKillsPerUser(idUser),

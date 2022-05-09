@@ -3,10 +3,15 @@ import Group from '../models/Group';
 import User from '../models/User';
 import { pubsub } from '../utils/pubsub';
 
-const getKills = async() => {
+const getKills = async(idGroup) => {
   try {
-    const kills = await Kill.find().populate('idUser').populate('idGroup');
-    return kills;
+    if (idGroup) {
+      const kills = await Kill.find({idGroup}).populate('idUser').populate('idGroup');
+      return kills;
+    } else {
+      const kills = await Kill.find().populate('idUser').populate('idGroup');
+      return kills;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -23,16 +28,15 @@ const getKill = async(id) => {
 
 const createKill = async(killInput, context) => {
   const {id} = context.user;
+  const foundUser = await User.findById(id);
   let newKill;
   
-  const foundGroup = await Group.findById(killInput.idGroup).populate('author').populate('users');
-  const totalKillInGroup = await getTotalKillsInGroup(foundGroup.id);
-
-  const foundUser = await User.findById(id);
+  const foundGroup = await Group.findById(killInput.idGroup).populate('author').populate('users');  
   if (killInput.low < 1) throw new Error('El valor debe ser mayor a 0');
-
+  
   const totalKillPerUserInGroup = await getTotalKillsPerUserInGroup(foundUser.id, foundGroup.id);
-
+  const totalKillInGroup = await getTotalKillsInGroup(foundGroup.id);
+  
   const arrayUsers = foundGroup.users.map( user => user.id);
 
   if (arrayUsers.includes(foundUser.id)) {
@@ -47,6 +51,8 @@ const createKill = async(killInput, context) => {
         user: foundUser,
         kills: totalKillPerUserInGroup.kills + newKill.low
       }});
+      
+
       return newKill
       
     } catch (error) {
@@ -95,15 +101,20 @@ const deleteKill = async(idKill, context) => {
 const getTotalKillsInGroup = async(idGroup) => {
   const groupKills = await Kill.find({idGroup}).populate('idUser').populate('idGroup');
   const kills = groupKills.map( kill => kill.low);
-  const totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue);
+  const totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
   // pubsub.publish('TOTAL_KILLS_IN_GROUP', { totalKillsInGroup: totalKills });
   return totalKills;
 }
 
 const getTotalKillsPerUser = async(idUser) => {
+  let totalKills = 0;
+  console.log(idUser);
   const userKills = await Kill.find({idUser}).populate('idUser').populate('idGroup');
-  const kills = userKills.map( kill => kill.low);
-  const totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue);
+  console.log(userKills);
+  if (userKills.length > 0) {
+    const kills = userKills.map( kill => kill.low);
+    totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+  }
   return totalKills;
 }
 
@@ -111,8 +122,10 @@ const getTotalKillsPerUserInGroup = async(idUser, idGroup) => {
   const arrayKills = [];
   const userKills = await Kill.find({idUser, idGroup}).populate('idUser').populate('idGroup');
   const kills = userKills.map( kill => kill.low);
+  console.log(kills);
   arrayKills.push(...kills);
-  const totalKills = arrayKills.reduce((previousValue, currentValue) => previousValue + currentValue);
+  const totalKills = arrayKills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+  console.log(totalKills);
 
   return {
     user: userKills[0].idUser,
