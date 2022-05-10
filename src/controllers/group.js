@@ -1,6 +1,8 @@
 import { validateGroup } from '../helpers/validate';
 import { UserInputError } from 'apollo-server';
 import Group from '../models/Group';
+import Kill from '../models/Kill';
+import { getTotalKillsPerUserInGroup } from './kill';
 
 const getGroups = async() => {
   try {
@@ -77,6 +79,17 @@ const deleteUserToGroup = async(deleteUserInput, context) => {
 
 }
 
+const getUsersKill = async(group) => {
+  const users = group.users;
+  const arrayKillsUser = [];
+  for await (const user of users) {
+    const kills = await getTotalKillsPerUserInGroup(user, group.id);
+    console.log(kills);
+    arrayKillsUser.push(kills);
+  }
+  return arrayKillsUser;
+}
+
 export default {
   createGroup,
   deleteGroup,
@@ -84,5 +97,6 @@ export default {
   getGroups,
   updateGroup,
   addUserToGroup,
-  deleteUserToGroup
+  deleteUserToGroup,
+  getUsersKill
 }

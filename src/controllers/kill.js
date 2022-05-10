@@ -118,14 +118,12 @@ const getTotalKillsPerUser = async(idUser) => {
   return totalKills;
 }
 
-const getTotalKillsPerUserInGroup = async(idUser, idGroup) => {
+export const getTotalKillsPerUserInGroup = async(idUser, idGroup) => {
   const arrayKills = [];
   const userKills = await Kill.find({idUser, idGroup}).populate('idUser').populate('idGroup');
   const kills = userKills.map( kill => kill.low);
-  console.log(kills);
   arrayKills.push(...kills);
   const totalKills = arrayKills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-  console.log(totalKills);
 
   return {
     user: userKills[0].idUser,
@@ -142,5 +140,6 @@ export default {
   deleteKill,
   getTotalKillsInGroup,
   getTotalKillsPerUser,
-  getTotalKillsPerUserInGroup
+  getTotalKillsPerUserInGroup,
+  getTotalKillsPerUsersInGroup
 }

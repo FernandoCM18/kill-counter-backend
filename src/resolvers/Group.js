@@ -5,6 +5,9 @@ export default {
     groups: () => groupController.getGroups(),
     group: (_, {id, name}) => groupController.getGroup(id, name)
   },
+  Group: {
+    usersKill: (group) => groupController.getUsersKill(group),
+  },
   Mutation: {
     createGroup: (_, { groupInput }, context) => groupController.createGroup(groupInput, context),
     updateGroup: (_, { groupInput }, context) => groupController.updateGroup(groupInput, context),

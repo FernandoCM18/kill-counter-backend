@@ -4,8 +4,14 @@ type Group {
   description: String
   author: User!
   users: [User]
+  usersKill: [UserGroupKill]
   createdAt: Date
   updatedAt: Date
+}
+
+type UserGroupKill {
+  user: User
+  kills: Int
 }
 
 extend type Query {
