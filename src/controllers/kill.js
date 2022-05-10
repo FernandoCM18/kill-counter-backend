@@ -141,5 +141,4 @@ export default {
   getTotalKillsInGroup,
   getTotalKillsPerUser,
   getTotalKillsPerUserInGroup,
-  getTotalKillsPerUsersInGroup
 }

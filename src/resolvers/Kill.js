@@ -8,7 +8,6 @@ export default {
     totalKillsInGroup: (_, { idGroup}) => killController.getTotalKillsInGroup(idGroup),
     totalKillsPerUser: (_, { idUser }) => killController.getTotalKillsPerUser(idUser),
     totalKillsPerUserInGroup: (_, { idUser, idGroup }) => killController.getTotalKillsPerUserInGroup(idUser, idGroup),
-    totalKillsPerUsersInGroup: (_, { idGroup }) => killController.getTotalKillsPerUsersInGroup(idGroup),
   },
   Mutation: {
     createKill: (_, { killInput }, context) => killController.createKill(killInput, context),  
