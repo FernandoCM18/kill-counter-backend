@@ -6,10 +6,10 @@ import { pubsub } from '../utils/pubsub';
 const getKills = async(idGroup) => {
   try {
     if (idGroup) {
-      const kills = await Kill.find({idGroup}).populate('idUser').populate('idGroup');
+      const kills = await Kill.find({idGroup}).populate('idUser').populate('idGroup').sort({createdAt: -1});
       return kills;
     } else {
-      const kills = await Kill.find().populate('idUser').populate('idGroup');
+      const kills = await Kill.find().populate('idUser').populate('idGroup').sort({createdAt: -1});
       return kills;
     }
   } catch (error) {
@@ -98,7 +98,7 @@ const deleteKill = async(idKill, context) => {
 
 }
 
-const getTotalKillsInGroup = async(idGroup) => {
+export const getTotalKillsInGroup = async(idGroup) => {
   const groupKills = await Kill.find({idGroup}).populate('idUser').populate('idGroup');
   const kills = groupKills.map( kill => kill.low);
   const totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);

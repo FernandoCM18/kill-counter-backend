@@ -5,6 +5,7 @@ type Group {
   author: User!
   users: [User]
   usersKill: [UserGroupKill]
+  groupKills: Int
   createdAt: Date
   updatedAt: Date
 }
