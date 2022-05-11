@@ -36,7 +36,10 @@ const createUser = async (user) => {
 	try {
 		const user = new User(newUser);
 		user.save();
-		return user;
+		const token = generateAuthToken(user);
+		return {
+			token
+		};
 	} catch (error) {
 		console.log(error);
 		throw new Error('Error al crear el usuario', error);

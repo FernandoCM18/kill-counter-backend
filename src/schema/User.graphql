@@ -16,7 +16,7 @@ type Query {
 }
 
 type Mutation {
-  createUser(user: CreateUserInput!): User!
+  createUser(user: CreateUserInput!): Token
   updateUser(user: UpdateUserInput): User!
   login(email: String!, password: String!): Token
 }
