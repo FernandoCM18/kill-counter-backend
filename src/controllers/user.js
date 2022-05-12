@@ -4,6 +4,8 @@ import { generateAuthToken } from '../utils/auth';
 
 import User from '../models/User';
 import { validateUser } from '../helpers/validate';
+import { getGroups } from './group';
+import Group from '../models/Group';
 
 const me = async (context) => {
 	return await context.user;
@@ -90,6 +92,10 @@ const login = async (email, password) => {
 	};
 };
 
+const getMyGroups = async (user) => {
+	return await Group.find({ users: user.id}).populate('author').populate('users');
+}
+
 
 export default {
 	createUser,
@@ -98,4 +104,5 @@ export default {
 	login,
 	me,
 	updateUser,
+	getMyGroups,
 };

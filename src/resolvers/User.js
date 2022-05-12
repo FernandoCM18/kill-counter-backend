@@ -9,6 +9,7 @@ export default {
   },
   User: {
     id: ({ _id }) => _id,
+    groups: (user) => userController.getMyGroups(user),
   },
   Mutation: {
     createUser: (_, {user}) => userController.createUser(user),
