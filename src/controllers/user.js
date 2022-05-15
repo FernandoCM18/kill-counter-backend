@@ -96,6 +96,16 @@ const getMyGroups = async (user) => {
 	return await Group.find({ users: user.id}).populate('author').populate('users');
 }
 
+const search = async (search) => {
+	const users = await User.find({
+		username: { $regex: search, $options: 'i' }
+	});
+
+	if (users.length === 0) throw new Error('No se encontraron usuarios');
+	
+	return users;
+}
+
 
 export default {
 	createUser,
@@ -105,4 +115,5 @@ export default {
 	me,
 	updateUser,
 	getMyGroups,
+	search
 };

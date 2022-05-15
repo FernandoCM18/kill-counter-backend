@@ -6,6 +6,7 @@ export default {
     me: (_, __, context) => userController.me(context),
     users: () => userController.getUsers(),
     user: (_, {id, username}) => userController.getUser(id, username),
+    search: (_, { search }) => userController.search(search),
   },
   User: {
     id: ({ _id }) => _id,
