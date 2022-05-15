@@ -62,6 +62,14 @@ const addUserToGroup = async(addUserInput, context) => {
   if (exists) throw new UserInputError('El usuario ya está en el grupo');
 
   if (foundGroup.users.find(user => user.id === addUserInput.idUser)) throw new UserInputError('El usuario ya está en el grupo');
+
+  const newKill = new Kill({
+    low: 0,
+    idUser: addUserInput.idUser,
+    idGroup: addUserInput.idGroup
+  });
+
+  newKill.save();
   return await Group.findByIdAndUpdate(foundGroup.id, {$push: {users: addUserInput.idUser}}, {new: true}).populate('author').populate('users');
   
 }

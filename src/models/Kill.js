@@ -4,7 +4,7 @@ const KillSchema = new Schema({
   low: {
     type: Number,
     required: true,
-    min: 1
+    min: 0
   },
   idUser: {
     type: Schema.Types.ObjectId,
