@@ -6,6 +6,7 @@ export default error => {
   if (inProduction) {
     // send error to tracking service
     console.log(error);
+    return error;
   } else {
     console.log(error);
     console.log(error.extensions.exception.stacktrace);
