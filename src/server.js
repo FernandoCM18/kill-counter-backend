@@ -9,7 +9,11 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
 
   const corsOptions = {
-    origin:[ 'http://localhost:3000', 'https://studio.apollographql.com'],
+    origin:[ 
+      'http://localhost:3000', 
+      'https://studio.apollographql.com',
+      process.env.FRONTEND_URL
+    ],
     credentials: true
   };
 
