@@ -9,7 +9,7 @@ type Kill {
 
 extend type Query {
   kill(id: ID!): Kill
-  kills(idGroup: ID): [Kill]
+  kills(idGroup: ID, skip: Int, limit: Int): [Kill]
   totalKillsInGroup(idGroup: ID): Int
   totalKillsPerUser(idUser: ID): Int
   totalKillsPerUserInGroup(idUser: ID, idGroup: ID): KillUser
@@ -23,7 +23,7 @@ type KillUser {
 type Mutation {
   createKill(killInput: CreateKillInput!): Kill
   updateKill(killInput: UpdateKillInput!): Kill
-  deleteKill(idKill: ID!): Kill
+  deleteKill(killInput: DeleteKillInput): Kill
 }
 
 type Subscription {
@@ -38,6 +38,11 @@ type Subscription {
 input CreateKillInput {
   low: Int!
   idGroup: ID!
+}
+
+input DeleteKillInput {
+  id: ID!
+  idGroup: ID
 }
 
 input UpdateKillInput {
