@@ -30,6 +30,7 @@ const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
     context,
     formatError,
     introspection: true,
+    playground: true,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       {
