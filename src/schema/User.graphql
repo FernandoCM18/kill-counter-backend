@@ -7,6 +7,7 @@ type User {
   createdAt: Date!
   updatedAt: Date!
   groups: [Group]
+  totalKills: Int!
 }
 
 type Query {
