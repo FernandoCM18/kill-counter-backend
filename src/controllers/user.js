@@ -6,6 +6,8 @@ import User from '../models/User';
 import { validateUser } from '../helpers/validate';
 import { getGroups } from './group';
 import Group from '../models/Group';
+import Kill from '../models/Kill';
+import { getTotalKillsPerUser } from './kill';
 
 const me = async (context) => {
 	return await context.user;
@@ -51,6 +53,8 @@ const createUser = async (user) => {
 const updateUser = async(userInput, context) => {
 	const { id } = context.user; 
 
+	await validateUser(userInput, true);
+
   if (userInput.password && userInput.newPassword) {
     const userFound = await User.findById(id);
     const isPasswordCorrect = await bcrypt.compareSync(userInput.password, userFound.password);
@@ -58,6 +62,10 @@ const updateUser = async(userInput, context) => {
     if (!isPasswordCorrect) throw new UserInputError('El password es incorrecto', {
       invalidArgs: { password: userInput.password },
     });
+
+		if (userInput.newPassword.length < 6) throw new UserInputError('El nuevo password debe tener al menos 5 caracteres', {
+			invalidArgs: { password: userInput.newPassword },
+		});
 
     const salt = await bcrypt.genSaltSync(10);
     const newPasswordCrypt = await bcrypt.hashSync(userInput.newPassword, salt);
@@ -71,8 +79,7 @@ const updateUser = async(userInput, context) => {
 
     if (userInput.newPassword) throw new UserInputError('Debes de agregar el password actual', {
       invalidArgs: { password: userInput.newPassword },
-    });
-		
+    });		
 		return await User.findByIdAndUpdate(id, userInput, {new: true});
   }
 
@@ -106,6 +113,10 @@ const search = async (search) => {
 	return users;
 }
 
+const getTotalKills = async (user) => {
+	return await getTotalKillsPerUser(user.id);
+}
+
 
 export default {
 	createUser,
@@ -115,5 +126,6 @@ export default {
 	me,
 	updateUser,
 	getMyGroups,
-	search
+	search,
+	getTotalKills
 };
