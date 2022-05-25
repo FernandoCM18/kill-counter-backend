@@ -3,6 +3,7 @@ import { UserInputError } from 'apollo-server';
 import Group from '../models/Group';
 import Kill from '../models/Kill';
 import { getTotalKillsPerUserInGroup, getTotalKillsInGroup } from './kill';
+import { pubsub } from '../utils/pubsub';
 
 const getGroups = async() => {
   try {
@@ -31,6 +32,12 @@ const createGroup = async(group, context) => {
     group.author = id;
     group.users = [id];
     group.save();
+    const newKill = new Kill({
+      low: 0,
+      idUser: id,
+      idGroup: group.id
+    });
+    newKill.save();
     return group;
   } catch (error) {
     console.log(error);
@@ -92,9 +99,9 @@ const getUsersKill = async(group) => {
   const arrayKillsUser = [];
   for await (const user of users) {
     const kills = await getTotalKillsPerUserInGroup(user, group.id);
-    console.log(kills);
     arrayKillsUser.push(kills);
   }
+  arrayKillsUser.sort((a, b) => b.kills - a.kills);
   return arrayKillsUser;
 }
 
