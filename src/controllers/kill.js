@@ -2,14 +2,54 @@ import Kill from '../models/Kill';
 import Group from '../models/Group';
 import User from '../models/User';
 import { pubsub } from '../utils/pubsub';
+import { UserInputError } from 'apollo-server-core';
+import { isObjEmpty } from '../helpers/validate';
 
-const getKills = async(idGroup) => {
+const MAX_PAGE_SIZE = async() => {
+  return await Kill.find().countDocuments();
+}
+
+const getKills = async(idGroup, skip, limit) => {
+  const MAX_LIMIT = await MAX_PAGE_SIZE();
+  const errors = {};
+  if (skip < 0) {
+    errors.skip = 'El valor no puede ser negativo';
+  }
+
+  if (limit < 0) {
+    errors.limit = 'El valor no puede ser negativo';
+  }
+
+  if (limit < 1) {
+    errors.limit = 'El valor debe ser mayor a 0';
+  }
+
+  // if (limit > MAX_LIMIT) {
+  //   errors.limit = 'El valor no puede ser mayor a ' + MAX_LIMIT;
+  // }
+
+  if (!isObjEmpty(errors)) {
+    throw new UserInputError('kill', {
+      invalidArgs: {errors}
+    });
+  }
+
   try {
     if (idGroup) {
-      const kills = await Kill.find({idGroup}).populate('idUser').populate('idGroup').sort({createdAt: -1});
+      const kills = await Kill.find({idGroup})
+        .populate('idUser')
+        .populate('idGroup')
+        .sort({createdAt: -1})
+        .skip(skip)
+        .limit(limit);
       return kills;
     } else {
-      const kills = await Kill.find().populate('idUser').populate('idGroup').sort({createdAt: -1});
+      const kills = await Kill.find()
+        .populate('idUser')
+        .populate('idGroup')
+        .sort({createdAt: -1})
+        .skip(skip)
+        .limit(limit);
       return kills;
     }
   } catch (error) {
@@ -44,6 +84,7 @@ const createKill = async(killInput, context) => {
       newKill = new Kill(killInput);
       newKill.idUser = foundUser;
       newKill.idGroup = foundGroup;
+      newKill.createdAt = new Date();
       pubsub.publish('KILL_CREATED', { killCreated: newKill});
       newKill.save();
       pubsub.publish('TOTAL_KILLS_IN_GROUP', { totalKillsInGroup: totalKillInGroup + newKill.low });
@@ -81,16 +122,27 @@ const updateKill = async(killInput, context) => {
   }
 }
 
-const deleteKill = async(idKill, context) => {
+const deleteKill = async(killInput, context) => {
   const {id} = context.user;
   let killDeleted;
-  const foundKIll = await Kill.findById(idKill).populate('idUser').populate('idGroup');
+
+  const totalKillPerUserInGroup = await getTotalKillsPerUserInGroup(id, killInput.idGroup);
+  const totalKillInGroup = await getTotalKillsInGroup(killInput.idGroup);
+
+  const foundKIll = await Kill.findById(killInput.id).populate('idUser').populate('idGroup');
+  console.log(foundKIll);
 
   if (foundKIll.idUser.id !== id) throw new Error('No tienes permisos para eliminar este kill');
 
   try {
-    killDeleted = await Kill.findByIdAndDelete(idKill);
+    killDeleted = await Kill.findByIdAndDelete(killInput.id);
     pubsub.publish('KILL_DELETED', { killDeleted });
+    pubsub.publish('TOTAL_KILLS_IN_GROUP', { totalKillsInGroup: totalKillInGroup - killDeleted.low });
+    pubsub.publish('TOTAL_KILLS_PER_USER_IN_GROUP', { totalKillsPerUserInGroup: {
+      user: context.user,
+      kills: totalKillPerUserInGroup.kills - killDeleted.low
+    }});
+
     return killDeleted;
   } catch (error) {
     console.log(error);
@@ -102,15 +154,13 @@ export const getTotalKillsInGroup = async(idGroup) => {
   const groupKills = await Kill.find({idGroup}).populate('idUser').populate('idGroup');
   const kills = groupKills.map( kill => kill.low);
   const totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-  // pubsub.publish('TOTAL_KILLS_IN_GROUP', { totalKillsInGroup: totalKills });
+  pubsub.publish('TOTAL_KILLS_IN_GROUP', { totalKillsInGroup: totalKills });
   return totalKills;
 }
 
-const getTotalKillsPerUser = async(idUser) => {
+export const getTotalKillsPerUser = async(idUser) => {
   let totalKills = 0;
-  console.log(idUser);
   const userKills = await Kill.find({idUser}).populate('idUser').populate('idGroup');
-  console.log(userKills);
   if (userKills.length > 0) {
     const kills = userKills.map( kill => kill.low);
     totalKills = kills.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
