@@ -2,7 +2,7 @@ import { UserInputError } from 'apollo-server';
 import User from '../models/User';
 import Group from '../models/Group';
 
-export const validateUser = async (user, context) => {
+export const validateUser = async (user, update) => {
   // const {name, email, username, password} = user;
 
   const foundEmail = await User.findOne({ email: user.email });
@@ -15,23 +15,23 @@ export const validateUser = async (user, context) => {
     invalidArgs: { username: user.username },
   });
 
-	if (user.name.length < 2) throw new UserInputError('El name debe tener al menos 2 caracteres', {
+	if (user.name && user.name.length < 2) throw new UserInputError('El name debe tener al menos 2 caracteres', {
     invalidArgs: { name: user.name },
   });
 
-	if (user.username.length < 2) throw new UserInputError('El username debe tener al menos 2 caracteres', {
+	if (user.username && user.username.length < 2) throw new UserInputError('El username debe tener al menos 2 caracteres', {
     invalidArgs: { username: user.username },
   });
 
-	if (!user.password) throw new UserInputError('El password es requerido', {
+	if (!update && !user.password) throw new UserInputError('El password es requerido', {
     invalidArgs: { password: user.password },
   });
 
-	if (user.password.length < 6) throw new UserInputError('El password debe tener al menos 5 caracteres', {
+	if (user.password && user.password.length < 6) throw new UserInputError('El password debe tener al menos 5 caracteres', {
     invalidArgs: { password: user.password },
   });
 
-}
+};
 
 export const validateGroup = async (group, context) => {
   const {id} = context.user;
@@ -49,4 +49,12 @@ export const validateGroup = async (group, context) => {
     invalidArgs: { description: group.description },
   });
 
+}
+
+export const isObjEmpty = (obj) => {
+  for (let prop in obj) {
+    if (obj.hasOwnProperty(prop)) return false;
+  }
+
+  return true;
 }
