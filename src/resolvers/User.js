@@ -11,6 +11,7 @@ export default {
   User: {
     id: ({ _id }) => _id,
     groups: (user) => userController.getMyGroups(user),
+    totalKills: (user) => userController.getTotalKills(user),
   },
   Mutation: {
     createUser: (_, {user}) => userController.createUser(user),
