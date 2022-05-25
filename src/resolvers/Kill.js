@@ -3,7 +3,7 @@ import { pubsub } from '../utils/pubsub';
 
 export default {
   Query: {
-    kills: (_, { idGroup }) => killController.getKills(idGroup),
+    kills: (_, { idGroup, skip = 0, limit = 10 }) => killController.getKills(idGroup, skip, limit),
     kill: (_, { id }) => killController.getKill(id),
     totalKillsInGroup: (_, { idGroup}) => killController.getTotalKillsInGroup(idGroup),
     totalKillsPerUser: (_, { idUser }) => killController.getTotalKillsPerUser(idUser),
@@ -12,7 +12,7 @@ export default {
   Mutation: {
     createKill: (_, { killInput }, context) => killController.createKill(killInput, context),  
     updateKill: (_, {killInput}, context) => killController.updateKill(killInput, context),
-    deleteKill: (_, {idKill}, context) => killController.deleteKill(idKill, context),
+    deleteKill: (_, {killInput}, context) => killController.deleteKill(killInput, context),
   },
   Subscription: {
     killCreated: {
