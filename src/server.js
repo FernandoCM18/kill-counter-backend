@@ -13,8 +13,7 @@ const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
       'http://localhost:3000', 
       'http://localhost:4173',
       'https://studio.apollographql.com',
-      // `${process.env.FRONTEND_URL}`,
-      'https://kill-counter.vercel.app/*'
+      `${process.env.FRONTEND_URL}`,
     ],
     credentials: true
   };
