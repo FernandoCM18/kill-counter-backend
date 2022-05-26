@@ -8,13 +8,13 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 
 const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
 
-  console.log(process.env.FRONTEND_URL);
   const corsOptions = {
     origin:[ 
       'http://localhost:3000', 
       'http://localhost:4173',
       'https://studio.apollographql.com',
-      `${process.env.FRONTEND_URL}`
+      `${process.env.FRONTEND_URL}`,
+      'https://kill-counter.vercel.app'
     ],
     credentials: true
   };
