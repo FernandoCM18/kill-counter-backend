@@ -12,6 +12,7 @@ const startApolloServer = async(typeDefs, resolvers, context, formatError) => {
   const corsOptions = {
     origin:[ 
       'http://localhost:3000', 
+      'http://localhost:4173',
       'https://studio.apollographql.com',
       `${process.env.FRONTEND_URL}`
     ],
